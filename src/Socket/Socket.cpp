@@ -55,7 +55,6 @@ bool Network::Socket::Bind(const Network::Endpoint &endpoint) {
 
 
 bool Network::Socket::SetBlocking(bool blocking) {
-    m_Blocking = blocking;
 #ifdef _WIN32
     unsigned long mode = blocking ? 0 : 1;
     return (ioctlsocket(m_Handle, FIONBIO, &mode) == 0);
