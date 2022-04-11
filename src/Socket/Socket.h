@@ -19,7 +19,7 @@ namespace Network{
         bool Create();
         bool Close();
         bool Bind(const Endpoint& endpoint);
-        bool SetBlocking(bool blocking);
+        bool SetBlocking(bool blocking) const;
         bool PollEvents(Event& event);
         inline SocketHandle GetSocketHandle() const {return m_Handle;}
         inline Endpoint& GetEndpoint() {return m_Endpoint;}
