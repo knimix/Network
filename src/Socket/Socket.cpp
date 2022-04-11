@@ -1,7 +1,6 @@
 #include "Socket.h"
 #include "../Core.h"
 
-
 Network::Socket::Socket() {
     PollFD = new pollfd;
     PollFD->fd = UNDEFINED_SOCKET;
@@ -9,13 +8,12 @@ Network::Socket::Socket() {
     PollFD->revents = 0;
 }
 
-Network::Socket::Socket(Network::SocketType type, SocketHandle handle) : m_SocketType(type), m_Handle(handle){
+Network::Socket::Socket(Network::SocketType type, SocketHandle handle) : m_SocketType(type), m_Handle(handle) {
     PollFD = new pollfd;
     PollFD->fd = handle;
     PollFD->events = POLLRDNORM | POLLWRNORM;
     PollFD->revents = 0;
 }
-
 
 Network::Socket::~Socket() {
     delete PollFD;
@@ -44,7 +42,6 @@ bool Network::Socket::Create() {
 }
 
 
-
 bool Network::Socket::Close() {
     if (m_Handle == UNDEFINED_SOCKET) {
         return false;
@@ -63,7 +60,6 @@ bool Network::Socket::Bind(const Network::Endpoint &endpoint) {
     int result = bind(m_Handle, (sockaddr *) &address, sizeof(sockaddr_in));
     return result == 0;
 }
-
 
 
 bool Network::Socket::SetBlocking(bool blocking) const {

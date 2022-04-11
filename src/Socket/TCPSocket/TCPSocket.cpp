@@ -1,7 +1,6 @@
 #include "TCPSocket.h"
 #include "../../Core.h"
 
-
 void Network::TCPSocket::Connect(const Network::Endpoint &endpoint) {
     m_Endpoint = endpoint;
     if (m_SocketType == SocketType::TCP) {
