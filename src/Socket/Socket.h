@@ -3,7 +3,6 @@
 #include "../Endpoint/Endpoint.h"
 #include "../Event.h"
 
-
 struct pollfd;
 
 namespace Network{
@@ -11,7 +10,6 @@ namespace Network{
     enum class SocketType{
         TCP,UDP
     };
-
 
     class Socket {
     public:
