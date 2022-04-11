@@ -6,7 +6,7 @@ project(Network)
 set(CMAKE_CXX_STANDARD 17)
 file(GLOB_RECURSE SOURCE_FILES src/*.h src/*.cpp src/*.c)
 
-add_library(${PROJECT_NAME} ${SOURCE_FILES})
+add_executable(${PROJECT_NAME} ${SOURCE_FILES} src/main.cpp)
 
 
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")

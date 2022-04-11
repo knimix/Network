@@ -2,8 +2,23 @@
 #include "../Core.h"
 
 
+Network::Socket::Socket() {
+    PollFD = new pollfd;
+    PollFD->fd = UNDEFINED_SOCKET;
+    PollFD->events = POLLRDNORM | POLLWRNORM;
+    PollFD->revents = 0;
+}
+
+Network::Socket::Socket(Network::SocketType type, SocketHandle handle) : m_SocketType(type), m_Handle(handle){
+    PollFD = new pollfd;
+    PollFD->fd = handle;
+    PollFD->events = POLLRDNORM | POLLWRNORM;
+    PollFD->revents = 0;
+}
+
+
 Network::Socket::~Socket() {
-    delete m_PollFD;
+    delete PollFD;
 }
 
 bool Network::Socket::Create() {
@@ -24,10 +39,7 @@ bool Network::Socket::Create() {
             return false;
         }
     }
-    m_PollFD = new pollfd;
-    m_PollFD->fd = m_Handle;
-    m_PollFD->events = POLLRDNORM | POLLWRNORM;
-    m_PollFD->revents = 0;
+    PollFD->fd = m_Handle;
     return true;
 }
 
@@ -67,11 +79,13 @@ bool Network::Socket::SetBlocking(bool blocking) const {
 }
 
 bool Network::Socket::PollEvents(Network::Event &event) {
-    if (m_Handle == UNDEFINED_SOCKET) {
+    if (m_Handle == UNDEFINED_SOCKET || PollFD == nullptr) {
         return false;
     }
-    if (Poll(m_PollFD, 1, 0) > 0) {
-        if (m_PollFD->revents & POLLERR) {
+    event = Event::None;
+    if (Poll(PollFD, 1, 0) > 0) {
+
+        if (PollFD->revents & POLLERR) {
             if (!m_Connected) {
                 Close();
                 event = Event::OnConnectFail;
@@ -81,18 +95,18 @@ bool Network::Socket::PollEvents(Network::Event &event) {
             event = Event::OnDisconnect;
             return true;
         }
-        if (m_PollFD->revents & POLLHUP) {
+        if (PollFD->revents & POLLHUP) {
             Close();
             event = Event::OnDisconnect;
             return true;
         }
-        if (m_PollFD->revents & POLLNVAL) {
+        if (PollFD->revents & POLLNVAL) {
             Close();
             event = Event::OnDisconnect;
             return true;
         }
 
-        if (m_PollFD->revents & POLLRDNORM) {
+        if (PollFD->revents & POLLRDNORM) {
             if (m_Listen) {
                 event = (Event::OnAcceptConnection);
             } else {
@@ -100,7 +114,7 @@ bool Network::Socket::PollEvents(Network::Event &event) {
             }
             return true;
         }
-        if (m_PollFD->revents & POLLWRNORM) {
+        if (PollFD->revents & POLLWRNORM) {
             if (!m_Connected && m_SocketType == SocketType::TCP) {
                 m_Connected = true;
                 event = Event::OnConnect;
@@ -112,5 +126,9 @@ bool Network::Socket::PollEvents(Network::Event &event) {
     }
     return false;
 }
+
+
+
+
 
 
