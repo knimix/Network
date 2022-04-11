@@ -31,7 +31,7 @@ namespace Network{
         pollfd* m_PollFD = nullptr;
         bool m_Listen = false;
         bool m_Connected = false;
-        Endpoint m_Endpoint;
+        Endpoint m_Endpoint = {};
         SocketType m_SocketType = SocketType::TCP;
     };
 }
