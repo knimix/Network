@@ -4,12 +4,9 @@
 void Network::TCPSocket::Connect(const Network::Endpoint &endpoint) {
     m_Endpoint = endpoint;
     if (m_SocketType == SocketType::TCP) {
-        int result;
         sockaddr_in address = endpoint.GetSockAddress();
-        result = connect(m_Handle, (sockaddr *) &address, sizeof(sockaddr_in));
+        connect(m_Handle, (sockaddr *) &address, sizeof(sockaddr_in));
     }
-
-
 }
 
 bool Network::TCPSocket::Listen() {
@@ -30,7 +27,6 @@ bool Network::TCPSocket::Accept(Network::Socket &socket) const {
         socket.GetEndpoint() = Endpoint((sockaddr *) &address);
         return true;
     }
-
     return false;
 }
 
