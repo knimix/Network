@@ -23,7 +23,7 @@ bool Network::TCPSocket::Accept(Network::Socket &socket) const {
         if (clientHandle == UNDEFINED_SOCKET) {
             return false;
         }
-        socket = Socket(SocketType::TCP, clientHandle);
+        socket = Socket(SocketType::TCP, clientHandle);;
         socket.GetEndpoint() = Endpoint((sockaddr *) &address);
         return true;
     }

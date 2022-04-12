@@ -13,5 +13,9 @@ typedef int SocketHandle;
 #define SOCKET_ERROR -1
 #endif
 
-
+struct PollFD {
+    SocketHandle fd;
+    short  events;
+    short  revents;
+};
 

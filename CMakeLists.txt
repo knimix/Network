@@ -8,7 +8,6 @@ file(GLOB_RECURSE SOURCE_FILES src/*.h src/*.cpp src/*.c)
 
 add_library(${PROJECT_NAME} ${SOURCE_FILES})
 
-
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "${PROJECT_NAME}")
 

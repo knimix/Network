@@ -13,8 +13,8 @@ namespace Network{
 
     class Socket {
     public:
-        Socket() = default;
-        explicit Socket(SocketType type, SocketHandle handle = UNDEFINED_SOCKET) : m_SocketType(type), m_Handle(handle){};
+        Socket();
+        explicit Socket(SocketType type, SocketHandle handle = UNDEFINED_SOCKET);
         ~Socket();
         bool Create();
         bool Close();
@@ -23,10 +23,10 @@ namespace Network{
         bool PollEvents(Event& event);
         inline SocketHandle GetSocketHandle() const {return m_Handle;}
         inline Endpoint& GetEndpoint() {return m_Endpoint;}
+        pollfd* PollFD = nullptr;
 
     protected:
         SocketHandle m_Handle = UNDEFINED_SOCKET;
-        pollfd* m_PollFD = nullptr;
         bool m_Listen = false;
         bool m_Connected = false;
         Endpoint m_Endpoint = {};
