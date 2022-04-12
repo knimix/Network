@@ -4,8 +4,6 @@
 
 Network::Socket::Socket(Network::SocketType type, SocketHandle handle) : m_SocketType(type), m_Handle(handle) {
     m_PollFD.fd = m_Handle;
-    m_PollFD.events = POLLRDNORM | POLLWRNORM;
-    m_PollFD.revents = 0;
 }
 
 bool Network::Socket::Create() {
@@ -27,8 +25,6 @@ bool Network::Socket::Create() {
         }
     }
     m_PollFD.fd = m_Handle;
-    m_PollFD.events = POLLRDNORM | POLLWRNORM;
-    m_PollFD.revents = 0;
     return true;
 }
 
