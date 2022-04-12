@@ -4,6 +4,7 @@
 
 Network::Socket::Socket(Network::SocketType type, SocketHandle handle) : m_SocketType(type), m_Handle(handle) {
     m_PollFD.fd = m_Handle;
+    m_PollFD.events = POLLRDNORM | POLLWRNORM;
     m_Connected = true;
 }
 
@@ -26,6 +27,7 @@ bool Network::Socket::Create() {
         }
     }
     m_PollFD.fd = m_Handle;
+    m_PollFD.events = POLLRDNORM | POLLWRNORM;
     return true;
 }
 

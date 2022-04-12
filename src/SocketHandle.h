@@ -15,7 +15,7 @@ typedef int SocketHandle;
 
 struct PollFD {
     SocketHandle fd = UNDEFINED_SOCKET;
-    short events = 0x0100 | 0x0010;
+    short events = 0;
     short revents = 0;
 };
 
