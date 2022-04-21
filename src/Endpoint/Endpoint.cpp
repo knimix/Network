@@ -13,7 +13,6 @@ Network::Endpoint::Endpoint(sockaddr *address) {
     inet_ntop(AF_INET, &addressV4->sin_addr, &m_IP[0], 16);
     m_IP.erase(std::find(m_IP.begin(), m_IP.end(), '\0'), m_IP.end());
     m_Hostname = m_IP;
-
 }
 
 Network::Endpoint::Endpoint(const char *ip, unsigned short port) {

@@ -11,6 +11,7 @@ namespace Network{
         bool Send(const std::vector<char>& buffer, int& bytesSent) const;
         bool Send(const std::vector<char>& buffer) const;
         bool Receive(std::vector<char>& buffer, int size) const;
+        uint16_t GetRemotePort() const;
     };
 
 }

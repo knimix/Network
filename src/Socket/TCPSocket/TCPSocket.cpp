@@ -61,3 +61,10 @@ bool Network::TCPSocket::Receive(std::vector<char>& buffer, int size) const {
     buffer.assign(tempBuffer, tempBuffer+bytesReceived);
     return true;
 }
+
+uint16_t Network::TCPSocket::GetRemotePort() const {
+    struct sockaddr_in client{};
+    int clientSize = sizeof(client);
+    getsockname(GetSocketHandle(), (struct sockaddr *) &client, &clientSize);
+    return ntohs(client.sin_port);
+}
