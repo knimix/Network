@@ -21,11 +21,10 @@ bool Network::UDPSocket::Send(const std::vector<char> &buffer, const Network::En
 }
 
 bool Network::UDPSocket::Receive(std::vector<char>& buffer, int size, Endpoint& from) const {
-    char tempBuffer[size];
+    buffer.resize(size);
     sockaddr address{};
     socklen_t length = sizeof(sockaddr);
-    size_t bytesReceived = 0;
-    bytesReceived = recvfrom(m_Handle, tempBuffer, size, 0,&address,&length);
+    size_t bytesReceived = recvfrom(m_Handle, &buffer[0], size, 0,&address,&length);
     if(bytesReceived == 0){
         return false;
     }
@@ -33,8 +32,6 @@ bool Network::UDPSocket::Receive(std::vector<char>& buffer, int size, Endpoint& 
         return false;
     }
     from = Endpoint((sockaddr*)&address);
-    buffer.clear();
     buffer.resize(bytesReceived);
-    buffer.assign(tempBuffer, tempBuffer+bytesReceived);
     return true;
 }

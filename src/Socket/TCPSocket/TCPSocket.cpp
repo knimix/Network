@@ -10,9 +10,8 @@ void Network::TCPSocket::Connect(const Network::Endpoint &endpoint) {
 }
 
 bool Network::TCPSocket::Listen() {
-    int result = listen(m_Handle, SOMAXCONN);
     m_Listen = true;
-    return result == 0;
+    return listen(m_Handle, SOMAXCONN) == 0;
 }
 
 bool Network::TCPSocket::Accept(Network::Socket &socket) const {
@@ -47,18 +46,15 @@ bool Network::TCPSocket::Send(const std::vector<char> &buffer) const {
 }
 
 bool Network::TCPSocket::Receive(std::vector<char>& buffer, int size) const {
-    char tempBuffer[size];
-    int bytesReceived = {};
-    bytesReceived = recv(m_Handle, tempBuffer, size, 0);
+    buffer.resize(size);
+    int bytesReceived = recv(m_Handle, &buffer[0], size, 0);
     if(bytesReceived == 0){
         return false;
     }
     if (bytesReceived == SOCKET_ERROR) {
         return false;
     }
-    buffer.clear();
     buffer.resize(bytesReceived);
-    buffer.assign(tempBuffer, tempBuffer+bytesReceived);
     return true;
 }
 

@@ -91,7 +91,7 @@ bool Network::Socket::PollEvents(Network::Event &event) {
         }
         if (fd.revents & POLLRDNORM) {
             if (m_Listen) {
-                event = (Event::OnAcceptConnection);
+                event = Event::OnAcceptConnection;
             } else {
                 event = Event::OnReceive;
             }
