@@ -8,7 +8,7 @@ class sockaddr_in;
 namespace Network{
     class Endpoint {
     public:
-        Endpoint() = default;
+        Endpoint(){ m_IP.resize(16);m_IPBytes.resize(sizeof(uint32_t));}
         explicit Endpoint(sockaddr* address);
         Endpoint(const char* ip, unsigned  short port);
         inline const std::string& GetHostname() const {return m_Hostname;}
