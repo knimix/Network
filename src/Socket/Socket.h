@@ -21,13 +21,14 @@ namespace Network{
         bool PollEvents();
         inline SocketHandle GetSocketHandle() const {return m_Handle;}
         inline Endpoint& GetEndpoint() {return m_Endpoint;}
-        inline void SetEventCallback(const std::function<void(Event)>& callback){m_EventCallback = callback;}
+        inline void SetEventCallback(const std::function<void(Socket&,const Event&)>& callback){m_EventCallback = callback;}
         inline bool IsClosed() const{return m_Handle == UNDEFINED_SOCKET;}
     protected:
-        std::function<void(Event event)> m_EventCallback;
+        std::function<void(Socket&,const Event&)> m_EventCallback;
         SocketHandle m_Handle = UNDEFINED_SOCKET;
         bool m_Listen = false;
         bool m_Connected = false;
+        bool m_Connecting = false;
         bool m_Blocking = false;
         Endpoint m_Endpoint = {};
         SocketType m_SocketType = SocketType::TCP;

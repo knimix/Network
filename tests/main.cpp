@@ -12,10 +12,13 @@ int main(){
 
     client.Create();
     client.SetBlocking(false);
-    client.Bind(Network::Endpoint("0.0.0.0",1920));
-    client.Listen();
+    client.Connect(Network::Endpoint("0.0.0.0",1920));
+   // client.Listen();
 
-    client.SetEventCallback([](Network::Event event){
+    client.SetEventCallback([](Network::Socket& socket, Network::Event event)
+    {
+        Network::TCPSocket& tcpSocket = *(Network::TCPSocket*)&socket;
+
        if(event == Network::Event::OnConnect){
            std::cout << "Connected\n";
        }
@@ -25,14 +28,19 @@ int main(){
        if(event == Network::Event::OnConnectFail){
            std::cout << "Connection Failed\n";
        }
+       if(event == Network::Event::OnAcceptConnection){
+           Network::TCPSocket myClient;
+           tcpSocket.Accept(myClient);
+           std::cout << "New Connection\n";
+       }
     });
- //   client.Close();
+    client.Close();
 
     //client.Reconnect();
 
 
     future = std::async(std::launch::async,[&client](){
-        _sleep(6000);
+       // _sleep(6000);
        client.Reconnect();
 
     });

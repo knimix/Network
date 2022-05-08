@@ -38,15 +38,15 @@ void Network::Socket::Close() {
     }
     CloseSocket(m_Handle);
     m_Handle = UNDEFINED_SOCKET;
+
     if(m_EventCallback){
-        m_EventCallback(Event::OnError);
-    }
-    if(!m_Connected && m_SocketType == SocketType::TCP){
-        if(m_EventCallback){
-            m_EventCallback(Event::OnConnectFail);
+        if(m_Connecting){
+            m_EventCallback(*this,Event::OnConnectFail);
         }
+        m_EventCallback(*this,Event::OnError);
     }
     m_Connected = false;
+    m_Connecting = false;
     m_Listen = false;
 }
 
@@ -100,9 +100,9 @@ bool Network::Socket::PollEvents() {
                 return true;
             }
             if (m_Listen) {
-                m_EventCallback(Event::OnAcceptConnection);
+                m_EventCallback(*this,Event::OnAcceptConnection);
             } else {
-                m_EventCallback(Event::OnReceive);
+                m_EventCallback(*this,Event::OnReceive);
             }
             return true;
         }
@@ -112,13 +112,13 @@ bool Network::Socket::PollEvents() {
                 if(!m_EventCallback){
                     return true;
                 }
-                m_EventCallback(Event::OnConnect);
+                m_EventCallback(*this,Event::OnConnect);
                 return true;
             }
             if(!m_EventCallback){
                 return true;
             }
-            m_EventCallback(Event::OnSend);
+            m_EventCallback(*this,Event::OnSend);
             return true;
         }
     }

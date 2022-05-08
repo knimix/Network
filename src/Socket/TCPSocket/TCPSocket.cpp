@@ -9,6 +9,7 @@ bool Network::TCPSocket::Connect(const Network::Endpoint &endpoint) {
     if (m_SocketType == SocketType::TCP) {
         sockaddr_in address = endpoint.GetSockAddress();
         connect(m_Handle, (sockaddr *) &address, sizeof(sockaddr_in));
+        m_Connecting = true;
     }
     return true;
 }
