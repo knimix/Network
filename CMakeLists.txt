@@ -6,7 +6,7 @@ project(Network)
 set(CMAKE_CXX_STANDARD 17)
 file(GLOB_RECURSE SOURCE_FILES src/*.h src/*.cpp src/*.c)
 
-add_library(${PROJECT_NAME} ${SOURCE_FILES})
+add_library(${PROJECT_NAME} ${SOURCE_FILES} tests/main.cpp)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "${PROJECT_NAME}")
@@ -23,5 +23,13 @@ else()
 endif()
 
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/" DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/export/${PROJECT_NAME}/include/${PROJECT_NAME}" FILES_MATCHING PATTERN "*.h")
+
+project(Test)
+set(CMAKE_CXX_STANDARD 17)
+file(GLOB_RECURSE SOURCE_FILES src/*.h src/*.cpp src/*.c)
+
+add_executable(Test ${SOURCE_FILES} tests/main.cpp)
+
+target_link_libraries(Test wsock32 ws2_32)
 
 

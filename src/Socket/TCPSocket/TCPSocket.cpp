@@ -1,12 +1,31 @@
 #include "TCPSocket.h"
 #include "../../Core.h"
 
-void Network::TCPSocket::Connect(const Network::Endpoint &endpoint) {
+bool Network::TCPSocket::Connect(const Network::Endpoint &endpoint) {
+    if(m_Handle == UNDEFINED_SOCKET){
+        return false;
+    }
     m_Endpoint = endpoint;
     if (m_SocketType == SocketType::TCP) {
         sockaddr_in address = endpoint.GetSockAddress();
         connect(m_Handle, (sockaddr *) &address, sizeof(sockaddr_in));
     }
+    return true;
+}
+bool Network::TCPSocket::Reconnect() {
+    if(!IsClosed()){
+        Close();
+    }
+    if(!Create()){
+        return false;
+    }
+    if(!SetBlocking(m_Blocking)){
+        return false;
+    }
+    if(!Connect(m_Endpoint)){
+        return false;
+    }
+    return true;
 }
 
 bool Network::TCPSocket::Listen() {
@@ -60,7 +79,8 @@ bool Network::TCPSocket::Receive(std::vector<char>& buffer, int size) const {
 
 uint16_t Network::TCPSocket::GetRemotePort() const {
     struct sockaddr_in client{};
-    int clientSize = sizeof(client);
+    socklen_t clientSize = sizeof(client);
     getsockname(GetSocketHandle(), (struct sockaddr *) &client, &clientSize);
     return ntohs(client.sin_port);
 }
+

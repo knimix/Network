@@ -1,11 +1,12 @@
-#include <iostream>
 #include "Socket.h"
 #include "../Core.h"
 
 Network::Socket::Socket(Network::SocketType type, SocketHandle handle) : m_SocketType(type), m_Handle(handle) {
     m_PollFD.fd = m_Handle;
     m_PollFD.events = POLLRDNORM | POLLWRNORM;
-    m_Connected = true;
+    if(handle != UNDEFINED_SOCKET){
+        m_Connected = true;
+    }
 }
 
 bool Network::Socket::Create() {
@@ -31,16 +32,21 @@ bool Network::Socket::Create() {
     return true;
 }
 
-bool Network::Socket::Close() {
+void Network::Socket::Close() {
     if (m_Handle == UNDEFINED_SOCKET) {
-        return false;
+        return;
     }
-    int result = CloseSocket(m_Handle);
-    if (result != 0) {
-        return false;
-    }
+    CloseSocket(m_Handle);
     m_Handle = UNDEFINED_SOCKET;
-    return true;
+    if(m_EventCallback){
+        m_EventCallback(Event::OnError);
+    }
+    if(!m_Connected && m_SocketType == SocketType::TCP){
+        if(m_EventCallback){
+            m_EventCallback(Event::OnConnectFail);
+        }
+    }
+    m_Connected = false;
 }
 
 bool Network::Socket::Bind(const Network::Endpoint &endpoint) {
@@ -50,7 +56,8 @@ bool Network::Socket::Bind(const Network::Endpoint &endpoint) {
     return result == 0;
 }
 
-bool Network::Socket::SetBlocking(bool blocking) const {
+bool Network::Socket::SetBlocking(bool blocking) {
+    m_Blocking = blocking;
 #ifdef _WIN32
     unsigned long mode = blocking ? 0 : 1;
     return (ioctlsocket(m_Handle, FIONBIO, &mode) == 0);
@@ -62,48 +69,55 @@ bool Network::Socket::SetBlocking(bool blocking) const {
 #endif
 }
 
-bool Network::Socket::PollEvents(Network::Event &event) {
+bool Network::Socket::PollEvents() {
     if (m_Handle == UNDEFINED_SOCKET) {
         return false;
     }
     pollfd fd = *(pollfd*)&m_PollFD;
-    event = Event::None;
     if (Poll(&fd, 1, 0) > 0) {
         if (fd.revents & POLLERR) {
-            if (!m_Connected) {
-                Close();
-                event = Event::OnConnectFail;
-                return true;
-            }
             Close();
-            event = Event::OnDisconnect;
             return true;
         }
         if (fd.revents & POLLHUP) {
             Close();
-            event = Event::OnDisconnect;
             return true;
         }
         if (fd.revents & POLLNVAL) {
             Close();
-            event = Event::OnDisconnect;
             return true;
         }
         if (fd.revents & POLLRDNORM) {
+            if(m_SocketType == SocketType::TCP){
+                char temp;
+                if(recv(m_Handle,&temp,sizeof(char),MSG_PEEK) == 0){
+                    Close();
+                    return true;
+                }
+            }
+            if(!m_EventCallback){
+                return true;
+            }
             if (m_Listen) {
-                event = Event::OnAcceptConnection;
+                m_EventCallback(Event::OnAcceptConnection);
             } else {
-                event = Event::OnReceive;
+                m_EventCallback(Event::OnReceive);
             }
             return true;
         }
         if (fd.revents & POLLWRNORM) {
-            if (!m_Connected && m_SocketType == SocketType::TCP) {
+            if (!m_Connected && m_SocketType == SocketType::TCP && !m_Listen) {
                 m_Connected = true;
-                event = Event::OnConnect;
+                if(!m_EventCallback){
+                    return true;
+                }
+                m_EventCallback(Event::OnConnect);
                 return true;
             }
-            event = Event::OnSend;
+            if(!m_EventCallback){
+                return true;
+            }
+            m_EventCallback(Event::OnSend);
             return true;
         }
     }
