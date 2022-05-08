@@ -12,7 +12,8 @@ int main(){
 
     client.Create();
     client.SetBlocking(false);
-    client.Connect(Network::Endpoint("10.12.2.104",1920));
+    client.Bind(Network::Endpoint("0.0.0.0",1920));
+    client.Listen();
 
     client.SetEventCallback([](Network::Event event){
        if(event == Network::Event::OnConnect){

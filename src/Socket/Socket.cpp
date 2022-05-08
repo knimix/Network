@@ -47,6 +47,7 @@ void Network::Socket::Close() {
         }
     }
     m_Connected = false;
+    m_Listen = false;
 }
 
 bool Network::Socket::Bind(const Network::Endpoint &endpoint) {

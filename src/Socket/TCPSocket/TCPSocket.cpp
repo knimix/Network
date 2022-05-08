@@ -2,7 +2,7 @@
 #include "../../Core.h"
 
 bool Network::TCPSocket::Connect(const Network::Endpoint &endpoint) {
-    if(m_Handle == UNDEFINED_SOCKET){
+    if(m_Handle == UNDEFINED_SOCKET || m_Listen){
         return false;
     }
     m_Endpoint = endpoint;
@@ -13,6 +13,9 @@ bool Network::TCPSocket::Connect(const Network::Endpoint &endpoint) {
     return true;
 }
 bool Network::TCPSocket::Reconnect() {
+    if(m_Listen){
+       return false;
+    }
     if(!IsClosed()){
         Close();
     }
