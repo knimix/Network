@@ -1,4 +1,3 @@
-#include <iostream>
 #include "UDPSocket.h"
 #include "../../Core.h"
 
