@@ -40,10 +40,10 @@ void Network::Socket::Close() {
     m_Handle = UNDEFINED_SOCKET;
 
     if(m_EventCallback){
-        if(m_Connecting){
+        if(m_Connecting && !m_Connected){
             m_EventCallback(*this,Event::OnConnectFail);
         }
-        m_EventCallback(*this,Event::OnError);
+        m_EventCallback(*this,Event::OnSocketClose);
     }
     m_Connected = false;
     m_Connecting = false;
@@ -51,6 +51,9 @@ void Network::Socket::Close() {
 }
 
 bool Network::Socket::Bind(const Network::Endpoint &endpoint) {
+    if(!endpoint){
+        return false;
+    }
     m_Endpoint = endpoint;
     sockaddr_in address = endpoint.GetSockAddress();
     int result = bind(m_Handle, (sockaddr *) &address, sizeof(sockaddr_in));
@@ -96,29 +99,26 @@ bool Network::Socket::PollEvents() {
                     return true;
                 }
             }
-            if(!m_EventCallback){
-                return true;
-            }
-            if (m_Listen) {
-                m_EventCallback(*this,Event::OnAcceptConnection);
-            } else {
-                m_EventCallback(*this,Event::OnReceive);
+            if(m_EventCallback){
+                if (m_Listen) {
+                    m_EventCallback(*this,Event::OnAcceptConnection);
+                } else {
+                    m_EventCallback(*this,Event::OnReceive);
+                }
             }
             return true;
         }
         if (fd.revents & POLLWRNORM) {
             if (!m_Connected && m_SocketType == SocketType::TCP && !m_Listen) {
                 m_Connected = true;
-                if(!m_EventCallback){
-                    return true;
+                if(m_EventCallback){
+                    m_EventCallback(*this,Event::OnConnect);;
                 }
-                m_EventCallback(*this,Event::OnConnect);
                 return true;
             }
-            if(!m_EventCallback){
-                return true;
+            if(m_EventCallback){
+                m_EventCallback(*this,Event::OnSend);
             }
-            m_EventCallback(*this,Event::OnSend);
             return true;
         }
     }

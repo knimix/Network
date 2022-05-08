@@ -13,6 +13,7 @@ Network::Endpoint::Endpoint(sockaddr *address) {
     inet_ntop(AF_INET, &addressV4->sin_addr, &m_IP[0], 16);
     m_IP.erase(std::find(m_IP.begin(), m_IP.end(), '\0'), m_IP.end());
     m_Hostname = m_IP;
+    m_Success = true;
 }
 
 Network::Endpoint::Endpoint(const char *ip, unsigned short port) {
@@ -25,6 +26,7 @@ Network::Endpoint::Endpoint(const char *ip, unsigned short port) {
             m_IP = ip;
             m_Hostname = ip;
             memcpy(&m_IPBytes[0], &address.s_addr, sizeof(uint32_t));
+            m_Success = true;
             return;
         }
     }
@@ -38,14 +40,17 @@ Network::Endpoint::Endpoint(const char *ip, unsigned short port) {
         m_Hostname = ip;
         uint32_t ipBytes = hostAddress->sin_addr.s_addr;
         memcpy(&m_IPBytes[0], &ipBytes, sizeof(uint32_t));
+        m_Success = true;
     }
     freeaddrinfo(hostInfo);
 }
 
 sockaddr_in Network::Endpoint::GetSockAddress() const {
     sockaddr_in address{};
-    address.sin_family = AF_INET;
-    memcpy(&address.sin_addr, &m_IPBytes[0], sizeof(uint32_t));
-    address.sin_port = htons(m_Port);
+    if(m_Success){
+        address.sin_family = AF_INET;
+        memcpy(&address.sin_addr, &m_IPBytes[0], sizeof(uint32_t));
+        address.sin_port = htons(m_Port);
+    }
     return address;
 }

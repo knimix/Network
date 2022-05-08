@@ -2,7 +2,7 @@
 #include "../../Core.h"
 
 bool Network::TCPSocket::Connect(const Network::Endpoint &endpoint) {
-    if(m_Handle == UNDEFINED_SOCKET || m_Listen){
+    if(m_Handle == UNDEFINED_SOCKET || m_Listen || !endpoint){
         return false;
     }
     m_Endpoint = endpoint;
@@ -13,9 +13,28 @@ bool Network::TCPSocket::Connect(const Network::Endpoint &endpoint) {
     }
     return true;
 }
-bool Network::TCPSocket::Reconnect() {
-    if(m_Listen){
+
+bool Network::TCPSocket::Reconnect(const Endpoint& endpoint) {
+    if(m_Listen || !endpoint){
        return false;
+    }
+    if(!IsClosed()){
+        Close();
+    }
+    if(!Create()){
+        return false;
+    }
+    if(!SetBlocking(m_Blocking)){
+        return false;
+    }
+    if(!Connect(endpoint)){
+        return false;
+    }
+    return true;
+}
+bool Network::TCPSocket::Reconnect() {
+    if(m_Listen || !m_Endpoint){
+        return false;
     }
     if(!IsClosed()){
         Close();
@@ -87,4 +106,6 @@ uint16_t Network::TCPSocket::GetRemotePort() const {
     getsockname(GetSocketHandle(), (struct sockaddr *) &client, &clientSize);
     return ntohs(client.sin_port);
 }
+
+
 

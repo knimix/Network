@@ -6,6 +6,7 @@ namespace Network{
     public:
         explicit TCPSocket(SocketHandle handle = UNDEFINED_SOCKET) : Socket(SocketType::TCP, handle) {}
         bool Connect(const Endpoint& endpoint);
+        bool Reconnect(const Endpoint& endpoint);
         bool Reconnect();
         bool Listen();
         bool Accept(Socket& socket) const;
