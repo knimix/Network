@@ -36,15 +36,14 @@ void Network::Socket::Close() {
     if (m_Handle == UNDEFINED_SOCKET) {
         return;
     }
-    CloseSocket(m_Handle);
-    m_Handle = UNDEFINED_SOCKET;
-
     if(m_EventCallback){
         if(m_Connecting && !m_Connected){
             m_EventCallback(*this,Event::OnConnectFail);
         }
         m_EventCallback(*this,Event::OnSocketClose);
     }
+    CloseSocket(m_Handle);
+    m_Handle = UNDEFINED_SOCKET;
     m_Connected = false;
     m_Connecting = false;
     m_Listen = false;
