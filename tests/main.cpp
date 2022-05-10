@@ -60,7 +60,7 @@ int main(){
 
 
     future = std::async(std::launch::async,[&client](){
-        _sleep(6000);
+      //  _sleep(6000);
         sent = false;
        client.Reconnect();
 
