@@ -20,13 +20,13 @@ You can switch a socket with **SetBlocking(true)** or **SetBlocking(false)**.
 
 ## Events
 Server:<br />
-**OnAcceptConnection**: Called every time a new client connects via TCP<br /><br />
+**OnAcceptConnection**: Called every time a new client connects via TCP.<br /><br />
 **OnSocketClose**: Called when the socket is closed (e.g. connection lost or other errors). <br /><br />
 Client:<br />
-**OnConnect**: Called when the client has connected to a server<br /><br />
-**OnConnectFail**: Called when the connection to the server failed in order to reconnect client.Reconnect();<br /><br />
-**OnSocketClose**: Called when the connection is broken)<br /><br />
-**OnReceive**: Is called as soon as the socket has data to receive with socket.Receive(); the data can be read<br /><br />
+**OnConnect**: Called when the client has connected to a server.<br /><br />
+**OnConnectFail**: Called when the connection to the server failed in order to reconnect client.Reconnect();.<br /><br />
+**OnSocketClose**: Called when the connection is broken.<br /><br />
+**OnReceive**: Is called as soon as the socket has data to receive with socket.Receive(); the data can be read.<br /><br />
 **OnSend**: Called every time the socket is ready to send data, this event is almost always called.<br /><br />
 
 ## Socket Creation
