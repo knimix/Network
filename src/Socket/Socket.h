@@ -1,15 +1,13 @@
 #pragma once
+#include <functional>
 #include "../SocketHandle.h"
 #include "../Endpoint/Endpoint.h"
-#include "../Event.h"
-#include <functional>
+#include "../Events.h"
 
-namespace Network{
-
-    enum class SocketType{
-        TCP,UDP
+namespace Network {
+    enum class SocketType {
+        TCP, UDP
     };
-
     class Socket {
     public:
         Socket() = default;
@@ -19,12 +17,13 @@ namespace Network{
         bool Bind(const Endpoint& endpoint);
         bool SetBlocking(bool blocking);
         bool PollEvents();
-        inline SocketHandle GetSocketHandle() const {return m_Handle;}
-        inline Endpoint& GetEndpoint() {return m_Endpoint;}
-        inline void SetEventCallback(const std::function<void(Socket&,const Event&)>& callback){m_EventCallback = callback;}
-        inline bool IsClosed() const{return m_Handle == UNDEFINED_SOCKET;}
+        inline SocketHandle GetSocketHandle() const { return m_Handle; }
+        inline Endpoint& GetEndpoint() { return m_Endpoint; }
+        inline void SetEventCallback(const std::function<void(SocketEvent)>& callback) { m_EventCallback = callback; }
+        inline bool IsClosed() const { return m_Handle == UNDEFINED_SOCKET; }
+        uint16_t GetRemotePort() const;
     protected:
-        std::function<void(Socket&,const Event&)> m_EventCallback;
+        std::function<void(SocketEvent)> m_EventCallback;
         SocketHandle m_Handle = UNDEFINED_SOCKET;
         bool m_Listen = false;
         bool m_Connected = false;

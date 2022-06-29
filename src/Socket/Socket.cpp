@@ -4,11 +4,10 @@
 Network::Socket::Socket(Network::SocketType type, SocketHandle handle) : m_SocketType(type), m_Handle(handle) {
     m_PollFD.fd = m_Handle;
     m_PollFD.events = POLLRDNORM | POLLWRNORM;
-    if(handle != UNDEFINED_SOCKET){
+    if (handle != UNDEFINED_SOCKET) {
         m_Connected = true;
     }
 }
-
 bool Network::Socket::Create() {
     if (m_Handle != UNDEFINED_SOCKET) {
         return false;
@@ -23,7 +22,7 @@ bool Network::Socket::Create() {
     }
     if (m_SocketType == SocketType::TCP) {
         int value = true;
-        if (setsockopt(m_Handle, IPPROTO_TCP, TCP_NODELAY, (const char *) &value, sizeof(value))) {
+        if (setsockopt(m_Handle, IPPROTO_TCP, TCP_NODELAY, (const char*) &value, sizeof(value))) {
             return false;
         }
     }
@@ -31,34 +30,31 @@ bool Network::Socket::Create() {
     m_PollFD.events = POLLRDNORM | POLLWRNORM;
     return true;
 }
-
 void Network::Socket::Close() {
     if (m_Handle == UNDEFINED_SOCKET) {
         return;
     }
-    if(m_EventCallback){
-        if(m_Connecting && !m_Connected){
-            m_EventCallback(*this,Event::OnConnectFail);
-        }
-        m_EventCallback(*this,Event::OnSocketClose);
-    }
     CloseSocket(m_Handle);
     m_Handle = UNDEFINED_SOCKET;
+    if (m_EventCallback) {
+        if (m_Connecting && !m_Connected) {
+            m_EventCallback(SocketEvent::OnConnectFailed);
+        }
+        m_EventCallback(SocketEvent::OnSocketClosed);
+    }
     m_Connected = false;
     m_Connecting = false;
     m_Listen = false;
 }
-
-bool Network::Socket::Bind(const Network::Endpoint &endpoint) {
-    if(!endpoint){
+bool Network::Socket::Bind(const Network::Endpoint& endpoint) {
+    if (!endpoint) {
         return false;
     }
     m_Endpoint = endpoint;
     sockaddr_in address = endpoint.GetSockAddress();
-    int result = bind(m_Handle, (sockaddr *) &address, sizeof(sockaddr_in));
+    int result = bind(m_Handle, (sockaddr*) &address, sizeof(sockaddr_in));
     return result == 0;
 }
-
 bool Network::Socket::SetBlocking(bool blocking) {
     m_Blocking = blocking;
 #ifdef _WIN32
@@ -71,12 +67,11 @@ bool Network::Socket::SetBlocking(bool blocking) {
     return (fcntl(m_Handle, F_SETFL, flags) == 0);
 #endif
 }
-
 bool Network::Socket::PollEvents() {
     if (m_Handle == UNDEFINED_SOCKET) {
         return false;
     }
-    pollfd fd = *(pollfd*)&m_PollFD;
+    pollfd fd = *(pollfd*) &m_PollFD;
     if (Poll(&fd, 1, 0) > 0) {
         if (fd.revents & POLLERR) {
             Close();
@@ -91,18 +86,18 @@ bool Network::Socket::PollEvents() {
             return true;
         }
         if (fd.revents & POLLRDNORM) {
-            if(m_SocketType == SocketType::TCP){
+            if (m_SocketType == SocketType::TCP) {
                 char temp;
-                if(recv(m_Handle,&temp,sizeof(char),MSG_PEEK) == 0){
+                if (recv(m_Handle, &temp, sizeof(char), MSG_PEEK) == 0) {
                     Close();
                     return true;
                 }
             }
-            if(m_EventCallback){
+            if (m_EventCallback) {
                 if (m_Listen) {
-                    m_EventCallback(*this,Event::OnAcceptConnection);
+                    m_EventCallback(SocketEvent::OnAcceptConnection);
                 } else {
-                    m_EventCallback(*this,Event::OnReceive);
+                    m_EventCallback(SocketEvent::OnReceive);
                 }
             }
             return true;
@@ -110,18 +105,24 @@ bool Network::Socket::PollEvents() {
         if (fd.revents & POLLWRNORM) {
             if (!m_Connected && m_SocketType == SocketType::TCP && !m_Listen) {
                 m_Connected = true;
-                if(m_EventCallback){
-                    m_EventCallback(*this,Event::OnConnect);;
+                if (m_EventCallback) {
+                    m_EventCallback(SocketEvent::OnConnected);;
                 }
                 return true;
             }
-            if(m_EventCallback){
-                m_EventCallback(*this,Event::OnSend);
+            if (m_EventCallback) {
+                m_EventCallback(SocketEvent::OnSend);
             }
             return true;
         }
     }
     return false;
+}
+uint16_t Network::Socket::GetRemotePort() const {
+    struct sockaddr_in client{};
+    socklen_t clientSize = sizeof(client);
+    getsockname(GetSocketHandle(), (struct sockaddr*) &client, &clientSize);
+    return ntohs(client.sin_port);
 }
 
 

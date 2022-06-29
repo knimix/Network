@@ -1,36 +1,21 @@
 #include "UDPSocket.h"
 #include "../../Core.h"
 
-
-bool Network::UDPSocket::Send(const std::vector<char>& buffer, int &bytesSent, const Endpoint& destination) const {
+bool Network::UDPSocket::Send(void* data, size_t size, size_t& bytesSent, const Endpoint& destination) const {
     sockaddr_in address = destination.GetSockAddress();
-    bytesSent = sendto(m_Handle,  &buffer[0], (int)buffer.size(), 0, (sockaddr*)&address, sizeof(sockaddr));
+    bytesSent = sendto(m_Handle, data, size, 0, (sockaddr*) &address, sizeof(sockaddr));
     if (bytesSent == SOCKET_ERROR) {
         return false;
     }
     return true;
 }
-bool Network::UDPSocket::Send(const std::vector<char> &buffer, const Network::Endpoint &destination) const {
-    sockaddr_in address = destination.GetSockAddress();
-    int bytesSent = sendto(m_Handle,  &buffer[0], (int)buffer.size(), 0, (sockaddr*)&address, sizeof(sockaddr));
-    if (bytesSent == SOCKET_ERROR) {
-        return false;
-    }
-    return true;
-}
-
-bool Network::UDPSocket::Receive(std::vector<char>& buffer, int size, Endpoint& from) const {
-    buffer.resize(size);
+bool Network::UDPSocket::Receive(void* data, size_t size, size_t& bytesReceived, Endpoint& from) const {
     sockaddr address{};
     socklen_t length = sizeof(sockaddr);
-    size_t bytesReceived = recvfrom(m_Handle, &buffer[0], size, 0,&address,&length);
-    if(bytesReceived == 0){
-        return false;
-    }
+    bytesReceived = recvfrom(m_Handle, data, size, 0, &address, &length);
     if (bytesReceived == SOCKET_ERROR) {
         return false;
     }
-    from = Endpoint((sockaddr*)&address);
-    buffer.resize(bytesReceived);
+    from = Endpoint((sockaddr*) &address);
     return true;
 }

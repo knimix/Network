@@ -3,10 +3,10 @@ set(CMAKE_C_COMPILER_WORKS TRUE)
 set(CMAKE_CXX_COMPILER_WORKS TRUE)
 project(Network)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 23)
 file(GLOB_RECURSE SOURCE_FILES src/*.h src/*.cpp src/*.c)
 
-add_library(${PROJECT_NAME} ${SOURCE_FILES} tests/main.cpp)
+add_library(${PROJECT_NAME} ${SOURCE_FILES} tests/TestServer.cpp src/Server/Server.cpp src/Server/Server.h src/Client/Client.cpp src/Client/Client.h)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "lib${PROJECT_NAME}")
@@ -24,14 +24,24 @@ endif()
 
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/" DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/export/${PROJECT_NAME}/include/${PROJECT_NAME}" FILES_MATCHING PATTERN "*.h")
 
-project(Test)
+project(TestServer)
 set(CMAKE_CXX_STANDARD 17)
 file(GLOB_RECURSE SOURCE_FILES src/*.h src/*.cpp src/*.c)
 
-add_executable(Test ${SOURCE_FILES} tests/main.cpp)
+add_executable(TestServer ${SOURCE_FILES} tests/TestServer.cpp)
 
 if (WIN32)
-    target_link_libraries(Test wsock32 ws2_32)
+    target_link_libraries(TestServer wsock32 ws2_32)
+endif ()
+
+project(TestClient)
+set(CMAKE_CXX_STANDARD 17)
+file(GLOB_RECURSE SOURCE_FILES src/*.h src/*.cpp src/*.c)
+
+add_executable(TestClient ${SOURCE_FILES} tests/TestClient.cpp)
+
+if (WIN32)
+    target_link_libraries(TestClient wsock32 ws2_32)
 endif ()
 
 
