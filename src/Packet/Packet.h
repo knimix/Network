@@ -12,6 +12,8 @@ namespace Network {
         void Clear();
         PacketType GetPacketType();
         void SetPacketType(PacketType id);
+        void AppendUint8(uint8_t data);
+        uint8_t GetUint8();
         void AppendUint16(uint16_t data);
         uint16_t GetUint16();
         void AppendUint32(uint32_t data);
