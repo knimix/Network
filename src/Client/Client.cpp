@@ -1,5 +1,5 @@
 #include "Client.h"
-#include <netinet/in.h>
+#include "../Core.h"
 #include <cstring>
 #include <iostream>
 

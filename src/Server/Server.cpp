@@ -1,7 +1,7 @@
 #include "Server.h"
 #include <iostream>
 #include <cstring>
-#include <arpa/inet.h>
+#include "../Core.h"
 
 namespace Network {
     bool Server::Open(const char* ip, int tcpPort, int udpPort) {

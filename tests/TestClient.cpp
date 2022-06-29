@@ -37,6 +37,7 @@ public:
 };
 
 int main() {
+    Network::Initialize();
     MyClient client("127.0.0.1", 1920, 1920);
     std::cout << "Starting Client!\n";
     if (!client.Open()) {

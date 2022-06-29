@@ -1,5 +1,5 @@
 #include "Packet.h"
-#include <arpa/inet.h>
+#include "../Core.h"
 
 namespace Network {
     Packet::Packet(PacketType type) :  m_PacketType(type){

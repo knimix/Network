@@ -68,14 +68,14 @@ bool Network::TCPSocket::Accept(Network::Socket& socket) const {
     return false;
 }
 bool Network::TCPSocket::Send(void* data, size_t size, size_t& bytesSent) const {
-    bytesSent = send(m_Handle, data, size, 0);
+    bytesSent = send(m_Handle, (char*)data, size, 0);
     if (bytesSent == SOCKET_ERROR) {
         return false;
     }
     return true;
 }
 bool Network::TCPSocket::Receive(void* data, size_t size, size_t& bytesReceived) const {
-    bytesReceived = recv(m_Handle, data, size, 0);
+    bytesReceived = recv(m_Handle, (char*)data, size, 0);
     if (bytesReceived == 0) {
         return false;
     }

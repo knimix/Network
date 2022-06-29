@@ -31,6 +31,8 @@ public:
 };
 
 int main() {
+    Network::Initialize();
+
     MyServer server;
     std::cout << "Starting Server!\n";
     if (!server.Open("0.0.0.0", 1920, 1920)) {
