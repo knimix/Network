@@ -3,7 +3,7 @@
 namespace Network {
     void PacketOutStream::Append(std::shared_ptr<Packet>& packet) {
         std::lock_guard lock(m_Mutex);
-        m_Packets.push(std::move(packet));
+        m_Packets.emplace(packet);
     }
     std::shared_ptr<Packet>& PacketOutStream::Front() {
         std::lock_guard lock(m_Mutex);

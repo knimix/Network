@@ -26,6 +26,9 @@ public:
         client->TCPOutStream.Append(p);
         client->UDPOutStream.Append(p2);
         client->UDPOutStream.Append(p3);
+        client->UDPOutStream.Append(p3);
+        client->UDPOutStream.Append(p3);
+        client->UDPOutStream.Append(p3);
     }
     void OnClientDisconnected(std::shared_ptr<Network::ServerClient> &client) override{std::cout << "Client disconnected from: " << client->TCPClient.GetEndpoint().GetIP() << std::endl;}
 };
