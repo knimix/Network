@@ -109,8 +109,7 @@ namespace Network {
                     } else {
                         if (TCPInStream.CurrentOffset == TCPInStream.PacketSize) {
                             auto packet = Network::Packet::CreatePacket();
-                            packet->GetBuffer().resize(TCPInStream.PacketSize);
-                            memcpy(&packet->GetBuffer()[0], &TCPInStream.Buffer[0], TCPInStream.PacketSize);
+                            packet->GetBuffer() = std::vector<uint8_t>(TCPInStream.Buffer.begin(), TCPInStream.Buffer.begin() + TCPInStream.PacketSize);
                             TCPInStream.PacketSize = 0;
                             TCPInStream.CurrentOffset = 0;
                             TCPInStream.CurrentTask = PacketStreamTask::ProcessSize;

@@ -1,5 +1,4 @@
 #include "Server.h"
-#include <iostream>
 #include <cstring>
 #include "../Core.h"
 
@@ -104,8 +103,7 @@ namespace Network {
                     break;
                 }
                 auto packet = Packet::CreatePacket();
-                packet->GetBuffer().resize(packetSize);
-                memcpy(&packet->GetBuffer()[0], (&m_UDPBuffer[0]) + sizeof(uint16_t), packetSize);
+                packet->GetBuffer() = std::vector<uint8_t>(m_UDPBuffer.begin() + sizeof(uint16_t), m_UDPBuffer.begin() + sizeof(uint16_t) + packetSize);
                 if (m_Clients.find(from.GetIP()) == m_Clients.end()) {
                     OnUDPUnknownSourcePacketReceived(from, packet);
                     break;
@@ -206,8 +204,7 @@ namespace Network {
                     } else {
                         if (tcpInStream.CurrentOffset == tcpInStream.PacketSize) {
                             auto packet = Packet::CreatePacket();
-                            packet->GetBuffer().resize(tcpInStream.PacketSize);
-                            memcpy(&packet->GetBuffer()[0], &tcpInStream.Buffer[0], tcpInStream.PacketSize);
+                            packet->GetBuffer() = std::vector<uint8_t>(tcpInStream.Buffer.begin(), tcpInStream.Buffer.begin() + tcpInStream.PacketSize);
                             tcpInStream.PacketSize = 0;
                             tcpInStream.CurrentOffset = 0;
                             tcpInStream.CurrentTask = PacketStreamTask::ProcessSize;
