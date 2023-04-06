@@ -1,7 +1,7 @@
 #include "Network.h"
 #include "Core.h"
 
-bool Network::Initialize() {
+bool Network::initialize() {
 #ifdef _WIN32
     WSADATA wsaData;
     int result = WSAStartup(MAKEWORD(2, 2), &wsaData);
@@ -17,7 +17,7 @@ bool Network::Initialize() {
 #endif
 }
 
-void Network::Terminate() {
+void Network::terminate() {
 #ifdef _WIN32
     WSACleanup();
 #endif

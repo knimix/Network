@@ -3,10 +3,18 @@ set(CMAKE_C_COMPILER_WORKS TRUE)
 set(CMAKE_CXX_COMPILER_WORKS TRUE)
 project(Network)
 
+if(CMAKE_SYSTEM_NAME MATCHES "Windows")
+    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+        set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/windows-x64)
+    else()
+        set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/windows-x86)
+    endif()
+    endif()
+
 set(CMAKE_CXX_STANDARD 23)
 file(GLOB_RECURSE SOURCE_FILES src/*.h src/*.cpp src/*.c)
 
-add_library(${PROJECT_NAME} ${SOURCE_FILES} tests/TestServer.cpp src/Server/Server.cpp src/Server/Server.h src/Client/Client.cpp src/Client/Client.h)
+add_library(${PROJECT_NAME} ${SOURCE_FILES} tests/TestServer.cpp)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "lib${PROJECT_NAME}")
@@ -38,7 +46,7 @@ project(TestClient)
 set(CMAKE_CXX_STANDARD 17)
 file(GLOB_RECURSE SOURCE_FILES src/*.h src/*.cpp src/*.c)
 
-add_executable(TestClient ${SOURCE_FILES} tests/TestClient.cpp)
+add_executable(TestClient ${SOURCE_FILES} tests/TestClient.cpp src/IPEndpoint.cpp src/IPEndpoint.h src/PacketBuffer.cpp src/PacketBuffer.h src/Socket/TCP/ServerSocket.cpp src/Socket/TCP/ServerSocket.h src/Packet.cpp src/Packet.h)
 
 if (WIN32)
     target_link_libraries(TestClient wsock32 ws2_32)

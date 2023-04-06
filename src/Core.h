@@ -4,8 +4,8 @@
 #include <ws2tcpip.h>
 #include <ws2def.h>
 #include <winsock2.h>
-#define CloseSocket(fd) closesocket(fd)
-#define Poll(x,y,z) WSAPoll(x,y,z)
+#define closeSocket(fd) closesocket(fd)
+#define poll(x,y,z) WSAPoll(x,y,z)
 #endif
 
 #ifdef __unix__
@@ -17,6 +17,5 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <poll.h>
-#define CloseSocket(fd) close(fd)
-#define Poll(x,y,z) poll(x,y,z)
+#define closeSocket(fd) close(fd)
 #endif

@@ -3,7 +3,7 @@ A cross-platform network library for UDP and TCP
 
 ## Usage
 
-To use the network library on Windows, it must be initialised with ***Network::Initialize();***. This is not necessary on other platforms
+To use the network library on Windows, it must be initialised with ***Network::initialize();***. This is not necessary on other platforms
 
 ## Endpoint
 
