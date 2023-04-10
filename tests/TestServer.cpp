@@ -1,6 +1,6 @@
 #include <iostream>
 #include <future>
-#include "../src/Network.h"
+#include "../include/Network/Network.h"
 
 
 

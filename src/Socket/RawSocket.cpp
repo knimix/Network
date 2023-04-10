@@ -27,10 +27,10 @@ namespace Network {
         mPollFD.fd = mHandle;
         mPollFD.events = POLLRDNORM | POLLWRNORM;
         bool blocking = false;
-#ifdef _WIN32
+#ifdef WINDOWS
         unsigned long mode = blocking ? 0 : 1;
         return (ioctlsocket(mHandle, FIONBIO, &mode) == 0);
-#else
+#elifdef LINUX
         int flags = fcntl(mHandle, F_GETFL, 0);
         if (flags == -1) return false;
         flags = blocking ? (flags & ~O_NONBLOCK) : (flags | O_NONBLOCK);

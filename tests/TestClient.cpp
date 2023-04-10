@@ -1,4 +1,4 @@
-#include "../src/Network.h"
+#include "../include/Network/Network.h"
 #include "../src/Socket/TCP/Socket.h"
 #include "../src/Socket/TCP/ServerSocket.h"
 #include <iostream>

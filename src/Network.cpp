@@ -1,8 +1,8 @@
-#include "Network.h"
+#include "../include/Network/Network.h"
 
 namespace Network {
     bool initialize() {
-#ifdef _WIN32
+#ifdef WINDOWS
         WSADATA wsaData;
     int result = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if (result != 0) {
@@ -17,7 +17,7 @@ namespace Network {
 #endif
     }
     void terminate() {
-#ifdef _WIN32
+#ifdef WINDOWS
         WSACleanup();
 #endif
     }
