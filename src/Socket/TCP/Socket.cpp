@@ -2,14 +2,14 @@
 #include "../../Core.h"
 
 namespace Network {
-    Socket::Socket(SocketHandle handle, const IPEndpoint &endpoint, SocketType type) : RawSocket(SocketProtocol::TCP), mEndpoint(endpoint), mType(type) {
+    Socket::Socket(SocketHandle handle, const IPEndpoint& endpoint, SocketType type) : RawSocket(SocketProtocol::TCP), mEndpoint(endpoint), mType(type) {
         mHandle = handle;
         mPollFD.fd = mHandle;
         mPollFD.events = POLLRDNORM | POLLWRNORM;
         mConnected = true;
         mReceiveBuffer.resize(MAX_PACKET_SIZE + sizeof(uint16_t));
     }
-    void Network::Socket::close() {
+    void Socket::close() {
         if (isClosed()) {
             return;
         }
@@ -24,7 +24,7 @@ namespace Network {
         }
         mConnected = false;
     }
-    void Network::Socket::connect(Network::IPEndpoint &endpoint, const std::function<void(bool)> &callback) {
+    void Socket::connect(IPEndpoint& endpoint, const std::function<void(bool)>& callback) {
         if (mConnected || mConnecting || isClosed()) {
             return;
         }
@@ -38,7 +38,7 @@ namespace Network {
                 return;
             }
             mConnecting = true;
-            ::connect(mHandle, (sockaddr *) &address, sizeof(sockaddr_in));
+            ::connect(mHandle, (sockaddr*) &address, sizeof(sockaddr_in));
         } else {
             sockaddr_in6 address{};
             if (!endpoint.solveIPv6(&address)) {
@@ -46,7 +46,7 @@ namespace Network {
                 return;
             }
             mConnecting = true;
-            ::connect(mHandle, (sockaddr *) &address, sizeof(sockaddr_in6));
+            ::connect(mHandle, (sockaddr*) &address, sizeof(sockaddr_in6));
         }
     }
     bool Socket::reconnect() {
@@ -59,8 +59,7 @@ namespace Network {
     void Socket::update() {
         if (mConnecting) {
             auto now = std::chrono::steady_clock::now();
-            if (std::chrono::duration_cast<std::chrono::seconds>(now - mConnectingStart).count() >=
-                mConnectionTimeout) {
+            if (std::chrono::duration_cast<std::chrono::seconds>(now - mConnectingStart).count() >= mConnectionTimeout) {
                 close();
             }
         }
@@ -82,7 +81,7 @@ namespace Network {
                     if (mType == SocketType::Raw) {
                         auto packet = std::make_shared<Packet>();
                         packet->resize(FRAGMENT_SIZE);
-                        auto read = ::recv(mHandle, (char *) packet->data(), FRAGMENT_SIZE, 0);
+                        auto read = ::recv(mHandle, (char*) packet->data(), FRAGMENT_SIZE, 0);
                         if (read == -1) {
                             close();
                             return;
@@ -91,8 +90,7 @@ namespace Network {
                         Rx.insert(packet);
                     } else {
                         if (mReceiveState == ReceiveState::ProcessSize) {
-                            auto read = ::recv(mHandle, (char *) mReceiveBuffer.data() + mReceivedBytes,
-                                               sizeof(uint16_t) - mReceivedBytes, 0);
+                            auto read = ::recv(mHandle, (char*) mReceiveBuffer.data() + mReceivedBytes, sizeof(uint16_t) - mReceivedBytes, 0);
                             if (read == -1) {
                                 close();
                                 return;
@@ -101,14 +99,12 @@ namespace Network {
                             if (mReceivedBytes == sizeof(uint16_t)) {
                                 mReceivedBytes = 0;
                                 mReceiveState = ReceiveState::ProcessData;
-                                int packetSize = *reinterpret_cast<uint16_t *>(mReceiveBuffer.data());
+                                int packetSize = *reinterpret_cast<uint16_t*>(mReceiveBuffer.data());
                             }
                         } else {
-                            int packetSize = *reinterpret_cast<uint16_t *>(mReceiveBuffer.data());
+                            int packetSize = *reinterpret_cast<uint16_t*>(mReceiveBuffer.data());
                             int left = packetSize - mReceivedBytes;
-                            auto read = ::recv(mHandle,
-                                               (char *) mReceiveBuffer.data() + sizeof(uint16_t) + mReceivedBytes, left,
-                                               0);
+                            auto read = ::recv(mHandle, (char*) mReceiveBuffer.data() + sizeof(uint16_t) + mReceivedBytes, left, 0);
                             if (read == -1) {
                                 close();
                                 return;
@@ -117,8 +113,7 @@ namespace Network {
                             if (mReceivedBytes == packetSize) {
                                 mReceiveState = ReceiveState::ProcessSize;
                                 auto packet = std::make_shared<Packet>();
-                                packet->assign(mReceiveBuffer.begin() + sizeof(uint16_t),
-                                               mReceiveBuffer.begin() + sizeof(uint16_t) + mReceivedBytes);
+                                packet->assign(mReceiveBuffer.begin() + sizeof(uint16_t), mReceiveBuffer.begin() + sizeof(uint16_t) + mReceivedBytes);
                                 Rx.insert(packet);
                                 mReceivedBytes = 0;
                             }
@@ -136,15 +131,14 @@ namespace Network {
                     }
                 }
                 if (Tx.hasNext()) {
-                    auto &packet = Tx.peek();
+                    auto& packet = Tx.peek();
                     if (mType == SocketType::Raw) {
                         int sent;
                         int left = packet->getSize() - mSentBytes;
                         if (left > FRAGMENT_SIZE) {
-                            sent = ::send(mHandle, (char *) packet->data() + mSentBytes, FRAGMENT_SIZE, 0);
+                            sent = ::send(mHandle, (char*) packet->data() + mSentBytes, FRAGMENT_SIZE, 0);
                         } else {
-                            sent = ::send(mHandle, (char *) packet->data() + mSentBytes,
-                                          packet->getSize() - mSentBytes, 0);
+                            sent = ::send(mHandle, (char*) packet->data() + mSentBytes, packet->getSize() - mSentBytes, 0);
                         }
                         if (sent == -1) {
                             close();
@@ -158,17 +152,15 @@ namespace Network {
                     } else {
                         if (mSendBuffer.empty()) {
                             uint16_t size = packet->getSize();
-                            mSendBuffer.insert(mSendBuffer.end(), (char *) &size,
-                                               (char *) (&size) + sizeof(uint16_t));
+                            mSendBuffer.insert(mSendBuffer.end(), (char*) &size, (char*) (&size) + sizeof(uint16_t));
                             mSendBuffer.insert(mSendBuffer.end(), packet->begin(), packet->end());
                         }
                         int left = mSendBuffer.size() - mSentBytes;
                         int sent;
                         if (left > FRAGMENT_SIZE) {
-                            sent = ::send(mHandle, (char *) mSendBuffer.data() + mSentBytes, FRAGMENT_SIZE, 0);
+                            sent = ::send(mHandle, (char*) mSendBuffer.data() + mSentBytes, FRAGMENT_SIZE, 0);
                         } else {
-                            sent = ::send(mHandle, (char *) mSendBuffer.data() + mSentBytes,
-                                          mSendBuffer.size() - mSentBytes, 0);
+                            sent = ::send(mHandle, (char*) mSendBuffer.data() + mSentBytes, mSendBuffer.size() - mSentBytes, 0);
                         }
                         if (sent == -1) {
                             close();

@@ -3,16 +3,15 @@
 #include "../../PacketBuffer.h"
 #include "../../Packet.h"
 
-namespace Network{
-    class Datagram : public Packet{
+namespace Network {
+    class Datagram : public Packet {
     public:
         Datagram() = default;
         IPEndpoint Endpoint;
     };
-
-    class DatagramSocket : public RawSocket{
+    class DatagramSocket : public RawSocket {
     public:
-        DatagramSocket() : RawSocket(SocketProtocol::UDP){};
+        DatagramSocket() : RawSocket(SocketProtocol::UDP) {};
         PacketBuffer<Datagram> Rx;
         PacketBuffer<Datagram> Tx;
     private:

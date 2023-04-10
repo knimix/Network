@@ -16,13 +16,13 @@ namespace Network {
     class Socket : public RawSocket {
     public:
         Socket(SocketType type) : RawSocket(SocketProtocol::TCP), mType(type) {};
-        Socket(SocketHandle handle, const IPEndpoint &endpoint, SocketType type);
+        Socket(SocketHandle handle, const IPEndpoint& endpoint, SocketType type);
         void close() override;
-        void connect(IPEndpoint &endpoint, const std::function<void(bool)> &callback);
+        void connect(IPEndpoint& endpoint, const std::function<void(bool)>& callback);
         void setConnectionTimeout(int timeout) { mConnectionTimeout = timeout; }
         bool reconnect();
         void update() override;
-        const IPEndpoint &getEndpoint() const { return mEndpoint; }
+        const IPEndpoint& getEndpoint() const { return mEndpoint; }
         PacketBuffer<Packet> Rx;
         PacketBuffer<Packet> Tx;
     private:

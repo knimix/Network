@@ -31,7 +31,7 @@ namespace Network {
         inline uint8_t* data() { return mBuffer.data(); }
         template<typename T>
         typename std::enable_if<!std::is_class<T>::value, void>::type append(T t) {
-            appendRaw((char*)&t, sizeof(T));
+            appendRaw((char*) &t, sizeof(T));
         }
         template<typename T>
         typename std::enable_if<std::is_same<T, std::string>::value || std::is_same<T, std::string_view>::value, void>::type append(T t) {
