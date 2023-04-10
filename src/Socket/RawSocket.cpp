@@ -8,9 +8,18 @@ namespace Network {
         }
         mVersion = version;
         int domain, type, proto;
-        version == SocketVersion::IPv4 ? domain = AF_INET : domain = AF_INET6;
-        mProtocol == SocketProtocol::TCP ? type = SOCK_STREAM : type = SOCK_DGRAM;
-        mProtocol == SocketProtocol::TCP ? proto = IPPROTO_TCP : type = IPPROTO_UDP;
+        if(version == SocketVersion::IPv4){
+            domain = AF_INET;
+        }else{
+            domain = AF_INET6;
+        }
+        if(mProtocol == SocketProtocol::TCP){
+            type = SOCK_STREAM;
+            proto = IPPROTO_TCP;
+        }else{
+            type = SOCK_DGRAM;
+            proto = IPPROTO_UDP;
+        }
         mHandle = socket(domain, type, proto);
         if (isClosed()) {
             return false;
@@ -58,17 +67,13 @@ namespace Network {
         if (poll(&fd, 1, 0) > 0) {
             if (fd.revents & POLLERR) {
                 onEvent(RawSocketEvent::Error);
-            }
-            if (fd.revents & POLLHUP) {
+            }else if (fd.revents & POLLHUP) {
                 onEvent(RawSocketEvent::Error);
-            }
-            if (fd.revents & POLLNVAL) {
+            }else if (fd.revents & POLLNVAL) {
                 onEvent(RawSocketEvent::Error);
-            }
-            if (fd.revents & POLLRDNORM) {
+            }else if (fd.revents & POLLRDNORM) {
                 onEvent(RawSocketEvent::Read);
-            }
-            if (fd.revents & POLLWRNORM) {
+            }else if (fd.revents & POLLWRNORM) {
                 onEvent(RawSocketEvent::Write);
             }
         }

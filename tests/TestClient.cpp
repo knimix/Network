@@ -1,77 +1,46 @@
 #include "../src/Network.h"
 #include "../src/Socket/TCP/Socket.h"
 #include "../src/Socket/TCP/ServerSocket.h"
-
-
 #include <iostream>
 #include <future>
 #include <thread>
 #include "../src/Socket/UDP/DatagramSocket.h"
 
-
-
-
 int main() {
     Network::initialize();
-    Network::Packet p;
+    std::cout << "TestClient example" << std::endl;
+    auto endpoint = Network::IPEndpoint("127.0.0.1", 1920);
+    Network::Socket socket(Network::SocketType::Raw);
 
-    Network::DatagramSocket s;
+    std::cout << "Open: " << socket.open(Network::SocketVersion::IPv4) << std::endl;
+    socket.setConnectionTimeout(2);
+    socket.connect(endpoint,[&socket](bool success){
+        if(success){
 
-    Network::Datagram d;
+            auto packet = std::make_shared<Network::Packet>();
+            packet->append<uint8_t>('H');
+            packet->append<uint8_t>('A');
+            packet->append<uint8_t>('L');
+            packet->append<uint8_t>('L');
+            packet->append<uint8_t>('O');
+            socket.Tx.insert(packet);
+            std::cout << "Connection established!" << std::endl;
+        }else{
+            std::cout << "Connection failed, try again in 2 seconds!" << std::endl;
+            std::this_thread::sleep_for(std::chrono::seconds(2));
+        }
+    })    ;
 
+    while (true) {
+        socket.update();
+        if(socket.Rx.hasNext()){
+            auto packet = socket.Rx.next();
+            std::cout << "Data received " << std::string(packet->begin(),packet->end()) << std::endl;
 
-
-    p.append<std::string>("Hallo");
-    p.append<std::string>("Welt");
-    p.append<uint32_t>(123);
-    p.append<std::string>("Welt");
-
-
-
-    std::cout << p.get<std::string>() << std::endl;
-    std::cout << p.get<std::string>() << std::endl;
-    std::cout << p.get<uint32_t> () << std::endl;
-    std::cout << p.get<std::string>() << std::endl;
-
-
-
-
-       auto endpoint = Network::IPEndpoint("10.122.23.2",1920);
-
-       Network::Socket socket(Network::SocketType::Raw);
-
-       socket.open(Network::SocketVersion::IPv4);
-       socket.setConnectionTimeout(2);
-       socket.connect(endpoint,[&socket](bool success){
-           std::cout << "Connection: " << success << std::endl;
-            if(success){
-                auto packet = std::make_shared<Network::Packet>();
-                std::string t = "123";
-                socket.Tx.insert(packet);
-                socket.Tx.insert(packet);
-                socket.Tx.insert(packet);
-                socket.Tx.insert(packet);
-                socket.Tx.insert(packet);
-            }
-       });
-
-
-       while(true){
-           socket.update();
-           if(socket.Rx.hasNext()){
-               auto packet = socket.Rx.next();
-               std::cout << packet->getSize() << std::endl;
-               socket.Rx.pop();
-
-           }
-           if(socket.isClosed()){
-               socket.open(Network::SocketVersion::IPv4);
-               socket.reconnect();
-           }
-       }
-
-
-
-
-
+        }
+        if(socket.isClosed()){
+            socket.open(Network::SocketVersion::IPv4);
+            socket.reconnect();
+        }
+    }
 }

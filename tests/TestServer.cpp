@@ -1,34 +1,44 @@
 #include <iostream>
 #include <future>
 #include "../src/Network.h"
-#include "../src/Socket/TCP/ServerSocket.h"
-#include <thread>
 
 
 
 int main() {
     Network::initialize();
-       auto endpoint = Network::IPEndpoint("0.0.0.0",1920);
-       Network::ServerSocket server(Network::SocketType::Managed);
-       std::cout <<  server.open(Network::SocketVersion::IPv4) << std::endl;
-       std::cout << server.bind(endpoint) << std::endl;
+    std::cout << "TestServer example" << std::endl;
 
-       server.listen();
-       std::shared_ptr< Network::Socket> client;
+    auto endpoint = Network::IPEndpoint("0.0.0.0", 1920);
+    Network::ServerSocket socket(Network::SocketType::Raw);
 
-       server.accept([&client](std::shared_ptr< Network::Socket>& socket){
-           std::cout << "Client connected from: " << socket->getEndpoint().getIP()<< std::endl;
-           client = socket;
-       });
-       while(true){
-           server.update();
-           if(client){
-               client->update();
+    std::cout << "Open: " << socket.open(Network::SocketVersion::IPv4) << std::endl;
+    std::cout << "Bind: " << socket.bind(endpoint) << std::endl;
+    socket.listen();
 
-               if(client->Rx.hasNext()){
-                   auto packet = client->Rx.next();
-                   std::cout << "Read: " << std::string(packet->begin(),packet->end()) << std::endl;
-               }
-           }
-       }
+    std::vector<std::shared_ptr<Network::Socket>> clients;
+
+    socket.accept([&clients](std::shared_ptr<Network::Socket>& socket){
+        std::cout << "New connection from : " << socket->getEndpoint().getIP() << std::endl;
+        clients.emplace_back(socket);
+    });
+
+    while (true) {
+        socket.update();
+        for(auto it = clients.begin(); it != clients.end();){
+            auto client = it.base()->get();
+            client->update();
+            if(client->Rx.hasNext()){
+                auto packet = client->Rx.next();
+                std::cout << "Data from " << client->getEndpoint().getIP() << " " << std::string(packet->begin(),packet->end()) << std::endl;
+                client->Tx.insert(packet);
+            }
+            if(client->isClosed()){
+                std::cout << "Client disconnected from " << client->getEndpoint().getIP() << std::endl;
+                it = clients.erase(it);
+            }else{
+                it++;
+            }
+        }
+
+    }
 }

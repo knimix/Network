@@ -14,6 +14,7 @@ namespace Network {
         inet_ntop(AF_INET, &address->sin_addr, &mIP[0], 16);
         mIP.erase(std::find(mIP.begin(), mIP.end(), '\0'), mIP.end());
         mHostname = mIP;
+        mAddress = mIP;
     }
     IPEndpoint::IPEndpoint(sockaddr_in6* address) {
         if (address == nullptr) {
@@ -24,6 +25,7 @@ namespace Network {
         inet_ntop(AF_INET6, &address->sin6_addr, &mIP[0], 16);
         mIP.erase(std::find(mIP.begin(), mIP.end(), '\0'), mIP.end());
         mHostname = mIP;
+        mAddress = mIP;
     }
     bool IPEndpoint::solveIPv4(sockaddr_in* address) {
         in_addr inAddress{};
