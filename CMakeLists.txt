@@ -14,7 +14,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Windows")
 set(CMAKE_CXX_STANDARD 23)
 file(GLOB_RECURSE SOURCE_FILES src/*.h src/*.cpp src/*.c)
 
-add_library(${PROJECT_NAME} ${SOURCE_FILES} tests/TestServer.cpp)
+add_library(${PROJECT_NAME} ${SOURCE_FILES} tests/TestServer.cpp src/Socket/UDP/DatagramSocket.cpp src/Socket/UDP/DatagramSocket.h src/Socket/RawSocket.cpp src/Socket/RawSocket.h)
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "lib${PROJECT_NAME}")
 
@@ -45,7 +45,7 @@ project(TestClient)
 set(CMAKE_CXX_STANDARD 17)
 file(GLOB_RECURSE SOURCE_FILES src/*.h src/*.cpp src/*.c)
 
-add_executable(TestClient ${SOURCE_FILES} tests/TestClient.cpp src/IPEndpoint.cpp src/IPEndpoint.h src/PacketBuffer.cpp src/PacketBuffer.h src/Socket/TCP/ServerSocket.cpp src/Socket/TCP/ServerSocket.h src/Packet.cpp src/Packet.h)
+add_executable(TestClient ${SOURCE_FILES} tests/TestClient.cpp src/IPEndpoint.cpp src/IPEndpoint.h src/PacketBuffer.h src/Socket/TCP/ServerSocket.cpp src/Socket/TCP/ServerSocket.h src/Packet.cpp src/Packet.h)
 
 if (WIN32)
     target_link_libraries(TestClient wsock32 ws2_32)

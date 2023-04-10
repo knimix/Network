@@ -9,9 +9,10 @@
 int main() {
     Network::initialize();
        auto endpoint = Network::IPEndpoint("0.0.0.0",1920);
-       Network::ServerSocket server;
-       std::cout <<  server.open(Network::SocketType::ManagedIPv4) << std::endl;
+       Network::ServerSocket server(Network::SocketType::Managed);
+       std::cout <<  server.open(Network::SocketVersion::IPv4) << std::endl;
        std::cout << server.bind(endpoint) << std::endl;
+
        server.listen();
        std::shared_ptr< Network::Socket> client;
 

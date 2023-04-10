@@ -1,18 +1,14 @@
 #include "Socket.h"
 namespace Network{
-    class ServerSocket {
+    class ServerSocket : public RawSocket{
     public:
-        ServerSocket() = default;
-        bool open(SocketType type);
-        void close();
-        inline bool isClosed() const {return mHandle == UNDEFINED_SOCKET;}
-        bool bind(IPEndpoint& endpoint) const;
-        void listen(int count = 2028) const;
+        ServerSocket(SocketType type) : RawSocket(SocketProtocol::TCP), mType(type){};
+        void listen(int count = 2048) const;
         void accept(const std::function<void(std::shared_ptr<Socket>&)>& callback){mAcceptCallback = callback;};
-        void update();
     private:
+        void onEvent(RawSocketEvent event) override;
         SocketHandle mHandle = UNDEFINED_SOCKET;
-        SocketType mType = SocketType::ManagedIPv4;
+        SocketType mType = SocketType::Managed;
         PollFD mPollFD{};
         std::function<void(std::shared_ptr<Socket>&)> mAcceptCallback;
     };

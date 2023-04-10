@@ -1,43 +1,38 @@
 #pragma once
-#include "../../IPEndpoint.h"
-#include "../../SocketHandle.h"
+#include "../RawSocket.h"
+#include "../../Packet.h"
 #include "../../PacketBuffer.h"
 #include <functional>
 #include <chrono>
+
 #define FRAGMENT_SIZE 1400
-namespace Network{
-    enum class SocketType{
-        RawIPv4, RawIPv6, ManagedIPv4, ManagedIPv6
+namespace Network {
+    enum class SocketType {
+        Raw, Managed
     };
-    enum class ReceiveState{
+    enum class ReceiveState {
         ProcessSize, ProcessData
     };
-
-
-    class Socket {
+    class Socket : public RawSocket {
     public:
-        Socket() = default;
-        Socket(SocketHandle handle,const IPEndpoint& endpoint, SocketType type);
-        bool open(SocketType type);
-        void close();
-        inline bool isClosed() const {return mHandle == UNDEFINED_SOCKET;}
-        bool bind(IPEndpoint& endpoint) const;
-        void connect( IPEndpoint& endpoint, const std::function<void(bool)>& callback);
-        void setConnectionTimeout(int timeout){ mConnectionTimeout = timeout;}
+        Socket(SocketType type) : RawSocket(SocketProtocol::TCP), mType(type) {};
+        Socket(SocketHandle handle, const IPEndpoint &endpoint, SocketType type);
+        void close() override;
+        void connect(IPEndpoint &endpoint, const std::function<void(bool)> &callback);
+        void setConnectionTimeout(int timeout) { mConnectionTimeout = timeout; }
         bool reconnect();
-        void update();
-        const IPEndpoint& getEndpoint() const {return mEndpoint;}
-        PacketBuffer Rx;
-        PacketBuffer Tx;
+        void update() override;
+        const IPEndpoint &getEndpoint() const { return mEndpoint; }
+        PacketBuffer<Packet> Rx;
+        PacketBuffer<Packet> Tx;
     private:
-        SocketHandle mHandle = UNDEFINED_SOCKET;
-        SocketType mType = SocketType::ManagedIPv4;
+        void onEvent(RawSocketEvent event) override;
+        SocketType mType = SocketType::Managed;
         std::function<void(bool)> mConnectionCallback;
         bool mConnected = false, mConnecting = false;
         std::chrono::time_point<std::chrono::steady_clock> mConnectingStart;
         int mConnectionTimeout = 10;
         IPEndpoint mEndpoint;
-        PollFD mPollFD{};
         int mSentBytes = 0;
         std::vector<uint8_t> mSendBuffer;
         int mReceivedBytes = 0;
