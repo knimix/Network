@@ -12,6 +12,19 @@
 
 int main() {
     Network::initialize();
+    Network::Packet p;
+
+
+
+    std::string data = "Hallo";
+
+    p.append(data);
+
+
+    std::cout << p.get<std::string>() << std::endl;
+
+
+    exit(0);
 
 
        auto endpoint = Network::IPEndpoint("127.0.0.1",1920);
@@ -25,11 +38,6 @@ int main() {
             if(success){
                 auto packet = std::make_shared<Network::Packet>();
                 std::string t = "123";
-                packet->getBuffer().emplace_back('H');
-                packet->getBuffer().emplace_back('A');
-                packet->getBuffer().emplace_back('L');
-                packet->getBuffer().emplace_back('L');
-                packet->getBuffer().emplace_back('O');
                 socket.Tx.insert(packet);
                 socket.Tx.insert(packet);
                 socket.Tx.insert(packet);
@@ -43,7 +51,7 @@ int main() {
            socket.update();
            if(socket.Rx.hasNext()){
                auto packet = socket.Rx.next();
-               std::cout << packet->size() << std::endl;
+               std::cout << packet->getSize() << std::endl;
                socket.Rx.pop();
 
            }

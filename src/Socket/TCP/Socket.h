@@ -41,7 +41,7 @@ namespace Network{
         int mSentBytes = 0;
         std::vector<uint8_t> mSendBuffer;
         int mReceivedBytes = 0;
-        std::array<uint8_t,MAX_PACKET_SIZE + sizeof(uint16_t)> mReceiveBuffer{};
+        std::vector<uint8_t> mReceiveBuffer{};
         ReceiveState mReceiveState = ReceiveState::ProcessSize;
     };
 }

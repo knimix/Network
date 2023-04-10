@@ -7,6 +7,7 @@ namespace Network {
         mPollFD.fd = mHandle;
         mPollFD.events = POLLRDNORM | POLLWRNORM;
         mConnected = true;
+        mReceiveBuffer.resize(MAX_PACKET_SIZE + sizeof(uint16_t));
     }
 
     bool Network::Socket::open(Network::SocketType type) {
@@ -29,7 +30,7 @@ namespace Network {
         unsigned long mode = blocking ? 0 : 1;
         return (ioctlsocket(mHandle, FIONBIO, &mode) == 0);
 #else
-        int flags = fcntl(m_Handle, F_GETFL, 0);
+        int flags = fcntl(mHandle, F_GETFL, 0);
         if (flags == -1) return false;
         flags = blocking ? (flags & ~O_NONBLOCK) : (flags | O_NONBLOCK);
         return (fcntl(mHandle, F_SETFL, flags) == 0);
@@ -40,7 +41,7 @@ namespace Network {
         if(isClosed()){
             return;
         }
-        closeSocket(mHandle);
+        ::closeSocket(mHandle);
         mHandle = UNDEFINED_SOCKET;
         if (mConnecting) {
             mConnecting = false;
@@ -142,13 +143,13 @@ namespace Network {
                 if(Rx.hasSpace()){
                     if(mType == SocketType::RawIPv4 ||mType == SocketType::RawIPv6){
                         auto packet = std::make_shared<Packet>();
-                        packet->getBuffer().resize(FRAGMENT_SIZE);
+                        packet->resize(FRAGMENT_SIZE);
                         auto read = ::recv(mHandle,(char*)packet->data(), FRAGMENT_SIZE,0);
                         if(read == -1){
                             close();
                             return;
                         }
-                        packet->getBuffer().resize(read);
+                        packet->resize(read);
                         Rx.insert(packet);
                     }else{
                         if(mReceiveState == ReceiveState::ProcessSize){
@@ -175,7 +176,7 @@ namespace Network {
                             if(mReceivedBytes == packetSize){
                                 mReceiveState = ReceiveState::ProcessSize;
                                 auto packet = std::make_shared<Packet>();
-                                packet->getBuffer().assign(mReceiveBuffer.begin() + sizeof(uint16_t),mReceiveBuffer.begin() + sizeof(uint16_t) + mReceivedBytes);
+                                packet->assign(mReceiveBuffer.begin() + sizeof(uint16_t),mReceiveBuffer.begin() + sizeof(uint16_t) + mReceivedBytes);
                                 Rx.insert(packet);
                                 mReceivedBytes = 0;
                             }
@@ -196,24 +197,24 @@ namespace Network {
                     auto& packet = Tx.peek();
                     if(mType == SocketType::RawIPv4 ||mType == SocketType::RawIPv6){
                         int sent;
-                        int left = packet->size() - mSentBytes;
+                        int left = packet->getSize() - mSentBytes;
                         if(left > FRAGMENT_SIZE){
                             sent = ::send(mHandle,(char*)packet->data() + mSentBytes,FRAGMENT_SIZE,0);
                         }else{
-                            sent = ::send(mHandle,(char*)packet->data() + mSentBytes,packet->size() - mSentBytes,0);
+                            sent = ::send(mHandle,(char*)packet->data() + mSentBytes,packet->getSize() - mSentBytes,0);
                         }
                         if(sent == -1){
                             close();
                             return;
                         }
                         mSentBytes+= sent;
-                        if(mSentBytes == packet->size()){
+                        if(mSentBytes == packet->getSize()){
                             mSentBytes = 0;
                             Tx.pop();
                         }
                     }else{
                         if(mSendBuffer.empty()){
-                            uint16_t size = packet->size();
+                            uint16_t size = packet->getSize();
                             mSendBuffer.insert(mSendBuffer.end(), (char*) &size, (char*) (&size) + sizeof(uint16_t));
                             mSendBuffer.insert(mSendBuffer.end(),packet->begin(),packet->end());
                         }

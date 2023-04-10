@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <iostream>
+#include <cstring>
 #include "Core.h"
 #include "IPEndpoint.h"
 

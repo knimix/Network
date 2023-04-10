@@ -21,7 +21,7 @@ bool Network::ServerSocket::open(Network::SocketType type) {
     unsigned long mode = blocking ? 0 : 1;
     return (ioctlsocket(mHandle, FIONBIO, &mode) == 0);
 #else
-    int flags = fcntl(m_Handle, F_GETFL, 0);
+    int flags = fcntl(mHandle, F_GETFL, 0);
     if (flags == -1) return false;
     flags = blocking ? (flags & ~O_NONBLOCK) : (flags | O_NONBLOCK);
     return (fcntl(mHandle, F_SETFL, flags) == 0);
@@ -32,7 +32,7 @@ void Network::ServerSocket::close() {
     if(isClosed()){
         return;
     }
-    closeSocket(mHandle);
+    ::closeSocket(mHandle);
     mHandle = UNDEFINED_SOCKET;
 }
 
