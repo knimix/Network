@@ -93,5 +93,8 @@ namespace Network {
         freeaddrinfo(hostInfo);
         return true;
     }
+    std::string IPEndpoint::toString() {
+        return mIP + ":" + std::to_string(mPort);
+    }
 }
 

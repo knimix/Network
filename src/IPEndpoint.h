@@ -17,6 +17,7 @@ namespace Network {
         inline std::string getIP() const { return mIP; }
         inline std::string getHostname() const { return mHostname; }
         inline std::string getAddress() const { return mAddress; }
+        inline std::string toString();
     private:
         uint16_t mPort = 0;
         std::string mIP, mHostname, mAddress;
