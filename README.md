@@ -10,5 +10,7 @@ If you build this library for windows you have to initialize the library with "N
 
 ### IPEndpoint
 The IPEndpoint is a class that contains an address. This could be a raw address or a domain. It also contains a port where e.g. the client should connect.
-An Endpoint can be solved with "solveIPv4" or "solveIPv6". This is used to create internal address data from the domain or address. If you want to just get the IP of a URL, you can use "solveIPv4" and pass a nullptr because you don't need this. After that, you can "getIP()" to get the IP address. Note that any solve function could fail and it will return false. 
+An Endpoint can be solved with "solveIPv4" or "solveIPv6". This is used to create internal address data from the domain or address. If you want to just get the IP of a URL, you can use "solveIPv4" and pass a nullptr because you don't need this. After that, you can use "getIP()" to get the IP address. Note that any solve function could fail and it will return false. 
+
+
 
