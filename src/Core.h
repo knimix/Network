@@ -1,12 +1,11 @@
 #pragma once
-#ifdef WINDOWS
+#ifdef WIN32
 #include <ws2tcpip.h>
 #include <ws2def.h>
 #include <winsock2.h>
 #define closeSocket(fd) closesocket(fd)
 #define poll(x,y,z) WSAPoll(x,y,z)
-#endif
-#ifdef LINUX
+#else
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netdb.h>

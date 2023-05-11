@@ -41,13 +41,13 @@ namespace Network {
                         if (!datagram->Endpoint.solveIPv4(&address)) {
                             return;
                         }
-                        sent = sendto(mHandle, datagram->data(), datagram->getSize(), 0, (sockaddr*) &address, sizeof(sockaddr));
+                        sent = sendto(mHandle, (char*) datagram->data(), datagram->getSize(), 0, (sockaddr*) &address, sizeof(sockaddr));
                     } else {
                         sockaddr_in6 address;
                         if (!datagram->Endpoint.solveIPv6(&address)) {
                             return;
                         }
-                        sent = sendto(mHandle, datagram->data(), datagram->getSize(), 0, (sockaddr*) &address, sizeof(sockaddr));
+                        sent = sendto(mHandle, (char*) datagram->data(), datagram->getSize(), 0, (sockaddr*) &address, sizeof(sockaddr));
                     }
                     Tx.pop();
                     if (sent == -1) {

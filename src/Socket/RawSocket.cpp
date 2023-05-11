@@ -27,7 +27,7 @@ namespace Network {
         mPollFD.fd = mHandle;
         mPollFD.events = POLLRDNORM | POLLWRNORM;
         bool blocking = false;
-#ifdef WINDOWS
+#ifdef WIN32
         unsigned long mode = blocking ? 0 : 1;
         return (ioctlsocket(mHandle, FIONBIO, &mode) == 0);
 #else
