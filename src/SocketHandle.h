@@ -1,11 +1,12 @@
 #pragma once
 #include <cstdint>
+#include <Util/Platform.h>
 
-#ifdef _WIN32
+#ifdef PLATFORM_WINDOWS
 typedef uint64_t SocketHandle;
 #define UNDEFINED_SOCKET (SocketHandle)~0
 #endif
-#ifdef __unix__
+#ifdef PLATFORM_UNIX
 typedef int SocketHandle;
 #define UNDEFINED_SOCKET (SocketHandle)~0
 #define SOCKET_ERROR -1
