@@ -10,7 +10,7 @@ if (CONAN_BUILD)
     find_package(util REQUIRED)
     target_link_libraries(Network util::util)
 else ()
-    target_compile_definitions(Network BUILD_LIBRARY)
+    target_compile_definitions(Network PUBLIC BUILD_LIBRARY)
     target_link_libraries(Network Util)
 endif ()
 
