@@ -1,4 +1,5 @@
-#include "Core.h"
+#include <Network/Network.h>
+#include <Network/Core.h>
 #include <Util/Platform.h>
 
 namespace Network {

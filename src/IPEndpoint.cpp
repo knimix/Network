@@ -1,8 +1,7 @@
+#include <Network/IPEndpoint.h>
+#include <Network/Core.h>
 #include <algorithm>
-#include <iostream>
 #include <cstring>
-#include "Core.h"
-#include "IPEndpoint.h"
 
 namespace Network {
     IPEndpoint::IPEndpoint(sockaddr_in* address) {

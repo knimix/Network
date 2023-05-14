@@ -1,5 +1,5 @@
-#include "RawSocket.h"
-#include "../Core.h"
+#include <Network/RawSocket.h>
+#include <Network/Core.h>
 
 namespace Network {
     bool RawSocket::open(SocketVersion version) {

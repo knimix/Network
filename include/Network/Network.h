@@ -1,6 +1,6 @@
 #pragma once
-#include "../../src/Socket/TCP/ServerSocket.h"
-#include "../../src/Socket/UDP/DatagramSocket.h"
+#include "TCP/ServerSocket.h"
+#include "UDP/DatagramSocket.h"
 
 
 namespace Network{

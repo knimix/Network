@@ -1,5 +1,5 @@
-#include "Socket.h"
-#include "../../Core.h"
+#include <Network/TCP/Socket.h>
+#include <Network/Core.h>
 
 namespace Network {
     Socket::Socket(SocketHandle handle, const IPEndpoint& endpoint, SocketType type) : RawSocket(SocketProtocol::TCP), mEndpoint(endpoint), mType(type) {

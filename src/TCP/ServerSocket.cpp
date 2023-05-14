@@ -1,5 +1,5 @@
-#include "ServerSocket.h"
-#include "../../Core.h"
+#include <Network/TCP/ServerSocket.h>
+#include <Network/Core.h>
 
 namespace Network {
     void ServerSocket::listen(int count) const {

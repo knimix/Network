@@ -1,6 +1,6 @@
 #pragma once
-#include "../IPEndpoint.h"
-#include "../SocketHandle.h"
+#include "IPEndpoint.h"
+#include "SocketHandle.h"
 
 namespace Network {
     enum class RawSocketEvent {

@@ -1,6 +1,6 @@
 #pragma once
+#include "Util/Platform.h"
 #include <cstdint>
-#include <Util/Platform.h>
 
 #ifdef PLATFORM_WINDOWS
 typedef uint64_t SocketHandle;

@@ -1,8 +1,7 @@
 #pragma once
 #include "../RawSocket.h"
-#include "../../PacketBuffer.h"
-#include "../../Packet.h"
-
+#include "../PacketBuffer.h"
+#include "../Packet.h"
 namespace Network {
     class Datagram : public Packet {
     public:

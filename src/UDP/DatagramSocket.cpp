@@ -1,5 +1,5 @@
-#include "DatagramSocket.h"
-#include "../../Core.h"
+#include <Network/UDP/DatagramSocket.h>
+#include <Network/Core.h>
 
 namespace Network {
     void DatagramSocket::onEvent(RawSocketEvent event) {

@@ -1,7 +1,7 @@
 #pragma once
 #include "../RawSocket.h"
-#include "../../Packet.h"
-#include "../../PacketBuffer.h"
+#include "../Packet.h"
+#include "../PacketBuffer.h"
 #include <functional>
 #include <chrono>
 

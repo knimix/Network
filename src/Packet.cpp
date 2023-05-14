@@ -1,4 +1,4 @@
-#include "Packet.h"
+#include <Network/Packet.h>
 
 namespace Network {
     void Packet::resize(size_t size) {

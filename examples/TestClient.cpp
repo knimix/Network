@@ -1,6 +1,6 @@
 #include "../include/Network/Network.h"
-#include "../src/Socket/TCP/Socket.h"
-#include "../src/Socket/TCP/ServerSocket.h"
+#include "Network/TCP/Socket.h"
+#include "Network/TCP/ServerSocket.h"
 #include <iostream>
 #include <future>
 #include <thread>
