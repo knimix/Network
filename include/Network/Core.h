@@ -7,7 +7,7 @@
 #define closeSocket(fd) closesocket(fd)
 #define poll(x,y,z) WSAPoll(x,y,z)
 #endif
-#ifdef PLATFORM_UNIX
+#if defined(PLATFORM_LINUX) || defined(PLATFORM_ANDROID)
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netdb.h>
