@@ -18,6 +18,9 @@ class networkRecipe(ConanFile):
 
     exports_sources = "CMakeLists.txt", "src/*", "include/*"
 
+    def requirements(self):
+        self.requires("util/1.0", transitive_headers=True)
+
     def config_options(self):
         if self.settings.os == "Windows":
             self.options.rm_safe("fPIC")
@@ -33,6 +36,8 @@ class networkRecipe(ConanFile):
         deps = CMakeDeps(self)
         deps.generate()
         tc = CMakeToolchain(self)
+        tc.variables["CONAN_BUILD"] = 1
+        tc.preprocessor_definitions["BUILD_LIBRARY"] = 1
         tc.generate()
 
     def build(self):
@@ -45,4 +50,4 @@ class networkRecipe(ConanFile):
         cmake.install()
 
     def package_info(self):
-        self.cpp_info.libs = ["math"]
+        self.cpp_info.libs = ["network"]

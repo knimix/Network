@@ -3,8 +3,7 @@ This is the third version of my Network library for C++.
 It supports TCP and UDP with IPv4 or IPv6.
 
 ### Building
-To build this project, you have to clone this repository and type "cmake ." in console while you're in the project directory. Next, you type "make". After building, the  library is in /build folder. All necessary includes are in /include.
-
+Use `conan create .` to build this project with conan.
 ### First steps
 If you build this library for windows you have to initialize the library with "Network::initialize()" (initializes the winsock api). At the end, you should also do "Network::shutdown()" to terminate the library.
 
