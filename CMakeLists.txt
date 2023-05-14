@@ -11,6 +11,6 @@ if (WIN32)
 endif ()
 
 target_include_directories(Network PUBLIC include)
-set_target_properties(Network PROPERTIES PUBLIC_HEADER "include/Network/Network.h")
-install(TARGETS Network)
 
+install(TARGETS Network ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/" DESTINATION "${CMAKE_INSTALL_PREFIX}/include" FILES_MATCHING PATTERN "*.h")
